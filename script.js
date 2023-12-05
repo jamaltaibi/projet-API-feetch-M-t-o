@@ -9,6 +9,7 @@ let map = L.map('maCarte', {
 
   
   map.on('click', function (event) {
+
     const latitude = event.latlng.lat;
     const longitude = event.latlng.lng;
   
@@ -16,6 +17,7 @@ let map = L.map('maCarte', {
     fetch(reverseGeocodingUrl)
       .then((response) => response.json())
       .then((geoData) => {
+
         const cityName = geoData.address
 
           ? geoData.address.city ||
@@ -33,8 +35,9 @@ let map = L.map('maCarte', {
           .then((response) => response.json())
           .then((data) => {
             console.log(data);
+
             const temperature = data.current.temperature_2m;
-            const contenu = `Ville : ${cityName} <br> Température : ${temperature} °C`;
+            const contenu = `Ville : ${cityName} <br>Température : ${temperature} °C`;
 
             // Supprimer le popup existant s'il y en a un
             if (marqueur) {
@@ -48,9 +51,9 @@ let map = L.map('maCarte', {
       });
   });
   
+  let marqueur; // Assurez-vous que la variable marqueur est déclarée
 const btnSearch = document.querySelector('.btnSearch');
 const input = document.querySelector('.input');
-let marqueur; // Assurez-vous que la variable marqueur est déclarée
 
 function handleSearch() { 
   const city = input.value;
@@ -58,7 +61,7 @@ function handleSearch() {
   fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${city}`)
     .then((response) => response.json())
     .then((data) => {
-      console.log(data);
+      
 
       if (data.length > 0) {
         const lat = data[0].lat;
@@ -96,3 +99,4 @@ input.addEventListener('keydown', function (event) {
 
 // Ajouter l'événement pour le clic sur le bouton
 btnSearch.addEventListener('click', handleSearch);
+
