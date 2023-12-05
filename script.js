@@ -1,11 +1,12 @@
 let map = L.map('maCarte', {
     center: [46.6031, 1.7369],
-    zoom: 6,
+    zoom: 6.5,
   });
   
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© contributeurs OpenStreetMap',
   }).addTo(map);
+
   
   map.on('click', function (event) {
     const latitude = event.latlng.lat;
@@ -16,11 +17,12 @@ let map = L.map('maCarte', {
       .then((response) => response.json())
       .then((geoData) => {
         const cityName = geoData.address
+
           ? geoData.address.city ||
             geoData.address.town ||
             geoData.address.village ||
             geoData.address.hamlet
-          : 'Ville inconnue';
+           :'Ville inconnue';
   
         console.log(
           `Latitude: ${latitude}, Longitude: ${longitude}, Ville: ${cityName}`
@@ -32,7 +34,8 @@ let map = L.map('maCarte', {
           .then((data) => {
             console.log(data);
             const temperature = data.current.temperature_2m;
-            const contenu = `Ville : ${cityName}<br>Température : ${temperature} °C`;
+            const contenu = `Ville : ${cityName} <br> Température : ${temperature} °C`;
+
             // Supprimer le popup existant s'il y en a un
             if (marqueur) {
               map.removeLayer(marqueur);
@@ -45,4 +48,51 @@ let map = L.map('maCarte', {
       });
   });
   
-  let marqueur; // Déclarer la variable marqueur à l'extérieur de la fonction map.on('click', ...)
+const btnSearch = document.querySelector('.btnSearch');
+const input = document.querySelector('.input');
+let marqueur; // Assurez-vous que la variable marqueur est déclarée
+
+function handleSearch() { 
+  const city = input.value;
+
+  fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${city}`)
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+
+      if (data.length > 0) {
+        const lat = data[0].lat;
+        const lon = data[0].lon;
+
+        const meteo = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m`;
+        fetch(meteo)
+          .then((response) => response.json())
+          .then((datameteo) => {
+            console.log(datameteo);
+
+            const temperature = datameteo.current.temperature_2m;
+        
+        // Supprimer le popup existant s'il y en a un
+        if (marqueur) {
+          map.removeLayer(marqueur);
+        } 
+        marqueur = L.marker([lat, lon]).addTo(map);
+        marqueur.bindPopup(`ville : ${city}<br>Température : ${temperature} °C`);
+        marqueur.openPopup();
+
+        })
+    }
+      else {
+        alert('Aucune ville trouvée');
+      }
+    })
+};
+
+input.addEventListener('keydown', function (event) {
+  if (event.code === 'Enter') {
+    handleSearch();
+  }
+});
+
+// Ajouter l'événement pour le clic sur le bouton
+btnSearch.addEventListener('click', handleSearch);
