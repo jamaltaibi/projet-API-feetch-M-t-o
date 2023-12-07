@@ -3,9 +3,20 @@ let map = L.map('maCarte', {
     zoom: 6.5,
   });
   
+ //Carte 1 //
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© contributeurs OpenStreetMap',
   }).addTo(map);
+
+  // // Carte 2 //
+  // L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+  //  attribution: '© Esri',
+  // }).addTo(map);
+
+  // // // Carte 3//
+  // L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+  // attribution: '© OpenTopoMap contributors',
+  // }).addTo(map);
 
   
   map.on('click', function (event) {
@@ -17,9 +28,10 @@ let map = L.map('maCarte', {
     fetch(reverseGeocodingUrl)
       .then((response) => response.json())
       .then((geoData) => {
+        console.log(geoData);
 
         const cityName = geoData.address
-
+            // Methode ternaire //
           ? geoData.address.city ||
             geoData.address.town ||
             geoData.address.village ||
@@ -52,8 +64,8 @@ let map = L.map('maCarte', {
   });
   
   let marqueur; // Assurez-vous que la variable marqueur est déclarée
-const btnSearch = document.querySelector('.btnSearch');
-const input = document.querySelector('.input');
+  const btnSearch = document.querySelector('.btnSearch');
+  const input = document.querySelector('.input');
 
 function handleSearch() { 
   const city = input.value;
